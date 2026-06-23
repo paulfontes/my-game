@@ -268,7 +268,59 @@ const Game = {
     window.addEventListener('keydown', (e) => this.handleKeyDown(e));
     window.addEventListener('keyup', (e) => this.handleKeyUp(e));
 
+    this.rescale();
+    window.addEventListener('resize', () => this.rescale());
+    this.setupTouchControls();
+
     this.animFrameId = requestAnimationFrame((t) => this.loop(t));
+  },
+
+  rescale() {
+    const scale = Math.min(
+      window.innerWidth / CANVAS_WIDTH,
+      window.innerHeight / CANVAS_HEIGHT
+    );
+    document.getElementById('game-wrapper').style.transform =
+      `translate(-50%, -50%) scale(${scale})`;
+  },
+
+  setupTouchControls() {
+    if (!window.matchMedia('(pointer: coarse)').matches) return;
+
+    const btnLeft  = document.getElementById('btn-left');
+    const btnRight = document.getElementById('btn-right');
+    const btnFire  = document.getElementById('btn-fire');
+
+    const hold = (el, key) => {
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        this.keys[key] = true;
+      }, { passive: false });
+      el.addEventListener('touchend',    () => { this.keys[key] = false; });
+      el.addEventListener('touchcancel', () => { this.keys[key] = false; });
+    };
+
+    hold(btnLeft,  'ArrowLeft');
+    hold(btnRight, 'ArrowRight');
+
+    btnFire.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (this.state === 'START' || this.state === 'GAME_OVER') {
+        this.startGame();
+      } else {
+        this.keys[' '] = true;
+      }
+    }, { passive: false });
+    btnFire.addEventListener('touchend',    () => { this.keys[' '] = false; });
+    btnFire.addEventListener('touchcancel', () => { this.keys[' '] = false; });
+
+    // Tap anywhere on the canvas (outside buttons) to start / restart
+    this.canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      if (this.state === 'START' || this.state === 'GAME_OVER') {
+        this.startGame();
+      }
+    }, { passive: false });
   },
 
   startGame() {
@@ -487,15 +539,20 @@ const Game = {
     ctx.font = '18px monospace';
     ctx.fillText('Destroy the invaders before they reach you!', cx, cy - 10);
 
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
     ctx.globalAlpha = pulse;
     ctx.fillStyle = '#ffffff';
     ctx.font = '24px monospace';
-    ctx.fillText('Press SPACE to Start', cx, cy + 40);
+    ctx.fillText(isTouch ? 'Tap FIRE to Start' : 'Press SPACE to Start', cx, cy + 40);
 
     ctx.globalAlpha = 1;
     ctx.fillStyle = '#666688';
     ctx.font = '16px monospace';
-    ctx.fillText('ARROW KEYS  move    SPACE  fire', cx, cy + 100);
+    ctx.fillText(
+      isTouch ? 'D-PAD  move    FIRE  shoot' : 'ARROW KEYS  move    SPACE  fire',
+      cx, cy + 100
+    );
 
     ctx.fillStyle = '#00e676';
     ctx.fillText('R = Rapid Fire', cx - 90, cy + 130);
@@ -525,10 +582,12 @@ const Game = {
     ctx.font = '28px monospace';
     ctx.fillText('Score: ' + this.score, cx, cy);
 
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+
     ctx.globalAlpha = pulse;
     ctx.fillStyle = '#ffffff';
     ctx.font = '24px monospace';
-    ctx.fillText('Press SPACE to Restart', cx, cy + 60);
+    ctx.fillText(isTouch ? 'Tap FIRE to Restart' : 'Press SPACE to Restart', cx, cy + 60);
 
     ctx.restore();
   },

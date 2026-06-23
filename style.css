@@ -6,16 +6,96 @@
 
 body {
   background: #000008;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
   font-family: monospace;
+}
+
+#game-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 600px;
+  transform-origin: center center;
+  /* transform: translate(-50%, -50%) scale(...) applied by JS on resize */
 }
 
 canvas {
   display: block;
   border: 1px solid #1a237e;
   box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+}
+
+/* ── Touch controls ─────────────────────────────────── */
+
+#touch-controls {
+  display: none; /* shown only on touch screens via media query below */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 130px;
+  pointer-events: none; /* let canvas receive taps except where buttons sit */
+}
+
+@media (pointer: coarse) {
+  #touch-controls {
+    display: block;
+  }
+}
+
+#dpad {
+  position: absolute;
+  left: 20px;
+  bottom: 18px;
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+#btn-fire {
+  position: absolute;
+  right: 20px;
+  bottom: 18px;
+  pointer-events: auto;
+}
+
+#dpad button {
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+}
+
+#btn-fire {
+  width: 90px;
+  height: 90px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #ff6d00;
+  border-color: rgba(255, 109, 0, 0.55);
+  box-shadow: 0 0 18px rgba(255, 109, 0, 0.25);
+}
+
+#dpad button,
+#btn-fire {
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(0, 0, 20, 0.6);
+  color: #ffffff;
+  font-family: monospace;
+  cursor: pointer;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.08s;
+}
+
+#dpad button:active,
+#btn-fire:active {
+  background: rgba(255, 255, 255, 0.18);
 }
