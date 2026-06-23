@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build output (if a build step is ever added)
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
